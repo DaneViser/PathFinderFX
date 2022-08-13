@@ -24,7 +24,7 @@ public class HelloApplication extends Application {
     private static boolean redExist = false;
     public static int clicks = 0;
     public List<Rectangle> rectList = new ArrayList<>();
-
+    public List<List<Character>> matrixGrid = new ArrayList<>();
     public GridPane grid = new GridPane();
 
     @Override
@@ -32,9 +32,37 @@ public class HelloApplication extends Application {
         Scene scene1 = new Scene(grid,760,760);
         createRectangles();
         AddEventListenerFunction();
+        createMatrix();
         stage.setTitle("PathFinder");
         stage.setScene(scene1);
         stage.show();
+    }
+
+    private void createMatrix(){
+        List<Character> ls = null;
+        for(int i = 0;i < 18;i++){
+            ls = new ArrayList<>();
+            for(int j = 0;j < 18;j++){
+                // W -> Water | L -> Land | S -> Start | E -> End
+                if(rectList.get(i + j).getFill() == Color.LIGHTBLUE){
+                    ls.add('W');
+                }
+                else if(rectList.get(i + j).getFill() == Color.LIGHTBLUE){
+                    ls.add('L');
+                }
+                else if(rectList.get(i + j).getFill() == Color.RED){
+                    ls.add('S');
+                }
+                else if(rectList.get(i + j).getFill() == Color.GREEN){
+                    ls.add('E');
+                }
+            }
+            matrixGrid.add(ls);
+        }
+        // Print matrix in console.
+        for(List<Character> lis: matrixGrid){
+            System.out.println(lis);
+        }
     }
     private void AddEventListenerFunction(){
         // Adds eventListener on all rectangles
