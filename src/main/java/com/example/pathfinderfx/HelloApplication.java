@@ -33,6 +33,7 @@ public class HelloApplication extends Application {
                 toAddRect.setFill(Color.RED);
                 GridPane.setRowIndex(toAddRect, i);
                 GridPane.setColumnIndex(toAddRect, j);
+                rectList.add(toAddRect);
                 grid.setVgap(2); grid.setHgap(2);
                 grid.getChildren().addAll(toAddRect);
             }
