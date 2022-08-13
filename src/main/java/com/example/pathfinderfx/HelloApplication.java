@@ -20,8 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HelloApplication extends Application {
-    List<Rectangle> rectList = new ArrayList<>();
-    GridPane grid = new GridPane();
+    private static boolean greenExist = false;
+    private static boolean redExist = false;
+    public static int clicks = 0;
+    public List<Rectangle> rectList = new ArrayList<>();
+
+    public GridPane grid = new GridPane();
+
     @Override
     public void start(Stage stage) throws IOException {
         Scene scene1 = new Scene(grid,760,760);
@@ -36,22 +41,35 @@ public class HelloApplication extends Application {
         for(Rectangle rect: rectList){
             rect.setOnMousePressed(mouseEvent -> {
                 if(mouseEvent.isPrimaryButtonDown()){
-                    // Pink
-                    if(rect.getFill() == Color.LIGHTBLUE){
+                    // For Obstacles
+                    if(rect.getFill() == Color.LIGHTBLUE)
                         rect.setFill(Color.PINK);
-                    }
-                    // Green {END}
-                    else if(rect.getFill() == Color.PINK){
-                        rect.setFill(Color.GREEN);
-                    }
-                    // Red {START}
-                    else if(rect.getFill() == Color.GREEN){
+                    else
+                        rect.setFill(Color.LIGHTBLUE);
+                }
+                if(mouseEvent.isSecondaryButtonDown()) {
+                    // For Start
+                    if(rect.getFill() == Color.LIGHTBLUE && !redExist){
                         rect.setFill(Color.RED);
+                        redExist = true;
                     }
-                    else // LightBlue
-                        if(rect.getFill() == Color.RED){
-                            rect.setFill(Color.LIGHTBLUE);
-                        }
+
+                    else if(rect.getFill() == Color.RED){
+                        rect.setFill(Color.LIGHTBLUE);
+                        redExist = false;
+                    }
+                }
+                if(mouseEvent.isMiddleButtonDown()) {
+                    // For End
+                    if(rect.getFill() == Color.LIGHTBLUE && !greenExist){
+                        rect.setFill(Color.GREEN);
+                        greenExist = true;
+                    }
+
+                    else if(rect.getFill() == Color.GREEN){
+                        rect.setFill(Color.LIGHTBLUE);
+                        greenExist = false;
+                    }
                 }
 
             });
