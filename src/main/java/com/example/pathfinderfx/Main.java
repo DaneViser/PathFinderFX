@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Main extends Application {
@@ -29,6 +30,7 @@ public class Main extends Application {
     private static int START_COL = -1;
     public static int clicks = 0;
     public List<List<Rectangle>> rectList = new ArrayList<>();
+    public List<Pair> finalRoad = new ArrayList<>();
     public GridPane grid = new GridPane();
 
     @Override
@@ -53,16 +55,18 @@ public class Main extends Application {
         System.out.println("/////////////////////////////////////////////////////////////////////");
         List<List<Character>> grid = createMatrix();
         boolean[][] visited = new boolean[18][18];
+        String road = (BFS_Grid.shortestPath(grid, visited, START_ROW, START_COL));
+        List<Pair> fnlRoad = getFinalRoadIndexes(road);
+        System.out.println(fnlRoad);
         System.out.println(BFS_Grid.shortestPath(grid, visited, START_ROW, START_COL));
-        System.out.println(BFS_Grid.travelList);
 
         Thread t = new Thread() {
             int i = 0;
-            final int len = BFS_Grid.travelList.size();
+            int len = BFS_Grid.travelList.size();
             Runnable updater = new Runnable() {
                 @Override
                 public void run() {
-                    colorCells(i);
+                    colorCellsYellow(i);
                     i++;
                 }
             };
@@ -70,6 +74,7 @@ public class Main extends Application {
             @Override
             public void run() {
                 while (i != len) {
+                    if(i == len - 1) break;
                     Platform.runLater(updater);
                     try {
                         Thread.sleep(10);
@@ -77,14 +82,66 @@ public class Main extends Application {
                         ex.printStackTrace();
                     }
                 }
+                Thread o = new Thread(){
+                    int j = 0;
+                    final int len2 = finalRoad.size();
+                    Runnable updater2 = new Runnable() {
+                        @Override
+                        public void run() {
+                            colorCellsBlue(j);
+                            j++;
+                        }
+                    };
+                    public void run() {
+                        while (j != len2) {
+                            Platform.runLater(updater2);
 
-            }
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+
+                };
+
+                o.start();
+            };
+
         };
         t.start(); // start thread t.
 
     }
+    private List<Pair> getFinalRoadIndexes(String put){
+        // Path coloring
+        List<String> myList = new ArrayList<>(Arrays.asList(put.split("\\|")));
+        List<String> indexes = new ArrayList<>();
+        List<Integer> ind = new ArrayList<>();
+        indexes.addAll(myList);
+        for(String str: indexes){
+            System.out.println(str);
+            String [] help = str.split(" ");
+            int x = Integer.parseInt(help[0]);
+            int y = Integer.parseInt(help[1]);
+            ind.add(x); ind.add(y);
 
-    private void colorCells(int index) {
+        }
+        for(int i = 0;i < ind.size();i+=2){
+            finalRoad.add(new Pair(ind.get(i),ind.get(i+1),0,""));
+        }
+
+        return finalRoad;
+
+    }
+    private void colorCellsBlue(int index){
+        // Final road coloring
+        int i = finalRoad.get(index).first;
+        int j = finalRoad.get(index).second;
+        rectList.get(i).get(j).setFill(Color.BLUE);
+    }
+    private void colorCellsYellow(int index) {
+        // Traversal coloring
         int i = BFS_Grid.travelList.get(index).first;
         int j = BFS_Grid.travelList.get(index).second;
         rectList.get(i).get(j).setFill(Color.YELLOW);

@@ -17,10 +17,10 @@ public class BFS_Grid {
         return grid.get(row).get(col) != 'L';
     }
 
-    public static int shortestPath(List<List<Character>> grid, boolean[][] visited, Integer row, Integer col) {
+    public static String shortestPath(List<List<Character>> grid, boolean[][] visited, Integer row, Integer col) {
 
         Queue<Pair> queue = new LinkedList<>();
-        queue.add(new Pair(row, col, 0));
+        queue.add(new Pair(row, col, 0, ""));
         visited[row][col] = true;
 
         while (!queue.isEmpty()) {
@@ -30,21 +30,23 @@ public class BFS_Grid {
 
             queue.remove();
 
-            if (grid.get(x).get(y) == 'E') return cell.path;
+            if (grid.get(x).get(y) == 'E') return cell.put;
             for (int i = 0; i < 4; i++) {
                 int adjx = x + dRow[i];
                 int adjy = y + dCol[i];
                 if (isValid(grid, visited, adjx, adjy)) {
-                    Pair help = new Pair(adjx, adjy, cell.path + 1);
-                    travelList.add(new Pair(adjx, adjy, 0));
+                    Pair help = new Pair(adjx, adjy, cell.path + 1, cell.put + adjx + " " + adjy + "|");
+                    travelList.add(new Pair(adjx, adjy, 0, cell.put));
                     visited[adjx][adjy] = true;
                     queue.add(help);
-                    if (grid.get(adjx).get(adjy) == 'E') return cell.path + 1;
+                    if (grid.get(adjx).get(adjy) == 'E') return cell.put;
+
+
                 }
             }
         }
 
-        return -1; // returns -1 if there is no path
+        return ""; // returns -1 if there is no path
     }
 
 
