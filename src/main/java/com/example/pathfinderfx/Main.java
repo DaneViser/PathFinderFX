@@ -1,6 +1,7 @@
 package com.example.pathfinderfx;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -34,7 +35,7 @@ public class Main extends Application {
     public void start(Stage stage) throws IOException {
         HBox hbox = new HBox(20);
         Button btnStart = new Button();
-        btnStart.setPrefSize(120,25);
+        btnStart.setPrefSize(120, 25);
         btnStart.setText("Start Traversal");
         btnStart.setOnAction(actionEvent -> startTraversal());
         hbox.getChildren().addAll(grid, btnStart);
@@ -42,50 +43,85 @@ public class Main extends Application {
         AddEventListenerFunction();
         createMatrix();
 
-        Scene scene1 = new Scene(hbox,900,760);
+        Scene scene1 = new Scene(hbox, 900, 760);
         stage.setTitle("PathFinder");
         stage.setScene(scene1);
         stage.show();
     }
-    private void startTraversal(){
+
+    private void startTraversal() {
         System.out.println("/////////////////////////////////////////////////////////////////////");
         List<List<Character>> grid = createMatrix();
-        boolean [][]visited = new boolean[18][18];
-        System.out.println(BFS_Grid.shortestPath(grid,visited,START_ROW, START_COL));
+        boolean[][] visited = new boolean[18][18];
+        System.out.println(BFS_Grid.shortestPath(grid, visited, START_ROW, START_COL));
+        System.out.println(BFS_Grid.travelList);
+
+        Thread t = new Thread() {
+            int i = 0;
+            final int len = BFS_Grid.travelList.size();
+            Runnable updater = new Runnable() {
+                @Override
+                public void run() {
+                    colorCells(i);
+                    i++;
+                }
+            };
+
+            @Override
+            public void run() {
+                while (i != len) {
+                    Platform.runLater(updater);
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+
+            }
+        };
+        t.start(); // start thread t.
 
     }
 
-    private List<List<Character>> createMatrix(){
+    private void colorCells(int index) {
+        int i = BFS_Grid.travelList.get(index).first;
+        int j = BFS_Grid.travelList.get(index).second;
+        rectList.get(i).get(j).setFill(Color.YELLOW);
+    }
+
+    private List<List<Character>> createMatrix() {
         List<List<Character>> matrixGrid = new ArrayList<>();
         List<Character> ls = null;
-        for(int i = 0;i < 18;i++){
+        for (int i = 0; i < 18; i++) {
             ls = new ArrayList<>();
-            for(int j = 0;j < 18;j++){
+            for (int j = 0; j < 18; j++) {
                 // W -> Water | L -> Land | S -> Start | E -> End
-                if(rectList.get(i).get(j).getFill() == Color.LIGHTBLUE){
+                if (rectList.get(i).get(j).getFill() == Color.LIGHTBLUE) {
                     ls.add('W');
                 }
-                if(rectList.get(i).get(j).getFill() == Color.PINK){
+                if (rectList.get(i).get(j).getFill() == Color.PINK) {
                     ls.add('L');
                 }
-                if(rectList.get(i).get(j).getFill() == Color.RED){
+                if (rectList.get(i).get(j).getFill() == Color.RED) {
                     ls.add('S');
                     START_ROW = i;
                     START_COL = j;
                 }
-                if(rectList.get(i).get(j).getFill() == Color.GREEN){
+                if (rectList.get(i).get(j).getFill() == Color.GREEN) {
                     ls.add('E');
                 }
             }
             matrixGrid.add(ls);
         }
         // Print matrix in console.
-        for(List<Character> lis: matrixGrid){
+        for (List<Character> lis : matrixGrid) {
             System.out.println(lis);
         }
         return matrixGrid;
     }
-    private void AddEventListenerFunction(){
+
+    private void AddEventListenerFunction() {
         // Adds eventListener on all rectangles
         for (List<Rectangle> rectangles : rectList) {
             for (Rectangle rect : rectangles) {
@@ -123,20 +159,21 @@ public class Main extends Application {
         }
 
 
+    }
 
-        }
-
-    private void createRectangles(){
-        for(int i = 0;i < 18;i++){
+    private void createRectangles() {
+        for (int i = 0; i < 18; i++) {
             List<Rectangle> pom = new ArrayList<>();
-            for(int j = 0;j < 18;j++){
+            for (int j = 0; j < 18; j++) {
                 Rectangle toAddRect = new Rectangle();
-                toAddRect.setHeight(40); toAddRect.setWidth(40);
+                toAddRect.setHeight(40);
+                toAddRect.setWidth(40);
                 toAddRect.setFill(Color.LIGHTBLUE);
                 GridPane.setRowIndex(toAddRect, i);
                 GridPane.setColumnIndex(toAddRect, j);
                 pom.add(toAddRect);
-                grid.setVgap(2); grid.setHgap(2);
+                grid.setVgap(2);
+                grid.setHgap(2);
                 grid.getChildren().addAll(toAddRect);
             }
             rectList.add(pom);
