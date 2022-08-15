@@ -42,6 +42,7 @@ public class Main extends Application {
         btnStart.setOnAction(actionEvent -> startTraversal());
         hbox.getChildren().addAll(grid, btnStart);
         createRectangles();
+        rectList.get(0).get(0).setStyle("-fx-border-width: 5px");
         AddEventListenerFunction();
         createMatrix();
 
@@ -226,11 +227,12 @@ public class Main extends Application {
                 toAddRect.setHeight(40);
                 toAddRect.setWidth(40);
                 toAddRect.setFill(Color.LIGHTBLUE);
+                toAddRect.setStyle("-fx-border-radius: 80px;");
                 GridPane.setRowIndex(toAddRect, i);
                 GridPane.setColumnIndex(toAddRect, j);
                 pom.add(toAddRect);
-                grid.setVgap(2);
-                grid.setHgap(2);
+                grid.setVgap(3);
+                grid.setHgap(3);
                 grid.getChildren().addAll(toAddRect);
             }
             rectList.add(pom);
